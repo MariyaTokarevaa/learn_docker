@@ -1,0 +1,47 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: psgr
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=12345
+      - POSTGRES_DB=mydata
+
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+    networks:
+      - dbnet
+  adminer:
+    image: adminer
+    container_name: adminer
+    ports:
+      - "127.0.0.1:8080:8080"
+    links:
+      - "postgres:db"
+    networks:
+      - dbnet
+    depends_on:
+      - postgres
+
+  webflask:
+    build: ./flask_docker
+    image: flask-back
+    container_name: flsite
+    links:
+      - "postgres:db"
+    networks:
+      - dbnet
+    ports:
+      - "127.0.0.1:8080:4000"
+    volumes:
+      - ./flask_docker:/app
+    depends_on:
+      - postgres
+
+networks:
+  dbnet:
+    driver: bridge
+
+volumes:
+  postgres-data:
