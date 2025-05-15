@@ -1,15 +1,15 @@
-FROM python:3.13-alpine
+FROM python:3.12-slim
+
+RUN groupadd -r groupflask && useradd -r -g groupflask useradd
 
 RUN pip install --upgrade pip
 
-ENV PYTHONUNBUFFERED=1
+RUN pip install flask psycopg2-binary
 
-WORKDIR /python-app
+EXPOSE 4000
 
-COPY requirements.txt .
-
-RUN pip install --no-cache-dir -r requirements.txt
+WORKDIR /app
 
 COPY . .
 
-CMD [ "python", "leern.py" ]
+CMD [ "python", "site.py" ]
